@@ -12,6 +12,17 @@ const Classes = Schema({
       ref: "Subjects",
     },
   ],
+  people: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "peopleType",
+    },
+  ],
+  peopleType: {
+    type: String,
+    enum: ["TeachersData", "studentData"],
+    required: true,
+  },
 });
 
 export default mongoose.model("Classes", Classes);

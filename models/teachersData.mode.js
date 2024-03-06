@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const teachersData = mongoose.Schema({
-    role : String,
     classesAssociated : [String]
 });
 

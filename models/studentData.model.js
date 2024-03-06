@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const studentData = mongoose.Schema({
-  role : String , 
   enrolls : {
     clases : [String],
     assignments : [String]

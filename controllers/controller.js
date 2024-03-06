@@ -9,7 +9,7 @@ import topicsModel from "../models/topics.model.js";
 import usersModel from "../models/users.model.js";
 import Users from "../models/users.model.js";
 
-export async function createUser(req, res ) {
+export async function createUser(req, res) {
   const { fname, lname, email, role } = req.body;
 
   const user = new usersModel({
@@ -18,11 +18,17 @@ export async function createUser(req, res ) {
     email,
     createDate: new Date(),
     role,
+    userRole: role ? "studentData" : "TeachersData",
   });
 
   await user
     .save()
     .then((data) => {
+      if(role){
+        createStudent(res,user._id);
+      }else{
+        createTeacher(res,user._id);
+      }
       return res.status(200).send({
         msg: "user created successfully!!",
         data,
@@ -36,8 +42,7 @@ export async function createUser(req, res ) {
     });
 }
 
-export async function createStudent(req, res) {
-  const { userID } = req.body;
+export async function createStudent( res, userID) {
   const student = new studentDataModel({});
 
   await usersModel
@@ -73,36 +78,41 @@ export async function createStudent(req, res) {
     });
 }
 
-export async function createTeacher(req, res) {
-  const { userID } = req.body;
+export async function createTeacher( res,userID) {
 
   const teacher = teachersDataMode({});
 
-  await usersModel.updateOne(
-    { _id: userID },
-    {
-      $set: {
-        usersData : teacher._id,
-      },
-    }
-  ).then(() => {
-    teacher.save().then((t) => {
-      return res.status(200).send({
-        msg : "Teacher added successfully",
-        data : t
-      })
-    }).catch((error) => {
+  await usersModel
+    .updateOne(
+      { _id: userID },
+      {
+        $set: {
+          usersData: teacher._id,
+        },
+      }
+    )
+    .then(() => {
+      teacher
+        .save()
+        .then((t) => {
+          return res.status(200).send({
+            msg: "Teacher added successfully",
+            data: t,
+          });
+        })
+        .catch((error) => {
+          return res.status(500).send({
+            msg: "Can not add teacher",
+            error,
+          });
+        });
+    })
+    .catch((error) => {
       return res.status(500).send({
-        msg : "Can not add teacher",
-        error
-      })
-    })
-  }).catch((error) => {
-    return res.status(500).send({
-      msg : "can't add teacher to users",
-      error
-    })
-  });
+        msg: "can't add teacher to users",
+        error,
+      });
+    });
 }
 
 export function getVideos(req, res) {
@@ -127,18 +137,137 @@ export function getClasses(req, res) {
     .findOne({ _id: classID })
     .populate({ path: "Subjects" })
     .then((cls) => {
-      const subjectNames = cls["Subjects"].map((sub) => {
-        return sub.title;
-      });
-      return res.status(200).send({
-        msg: "class retrieved successfully!!",
-        data: subjectNames,
+      if (cls) {
+        const subjectNames = cls["Subjects"].map((sub) => {
+          return sub.title;
+        });
+        return res.status(200).send({
+          msg: "class retrieved successfully!!",
+          data: subjectNames,
+        });
+      }
+      return res.status(404).send({
+        msg: "Invalid classID",
       });
     })
     .catch((error) => {
       return res.status(500).send({
         msg: "Error retrieving class!!!",
         error,
+      });
+    });
+}
+
+export function getClassData(req, res) {
+  const { classID } = req.params;
+
+  classesModel
+    .findOne({ _id: classID })
+    .populate({
+      path: "Subjects",
+      populate: {
+        path: "topics",
+        populate: {
+          path: "lectures",
+        },
+      },
+    })
+    .then((data) => {
+      if (data) {
+        return res.status(200).send({
+          msg: "class retrieved successfully",
+          data: data.Subjects,
+        });
+      }
+      return res.status(404).send({
+        msg: "invalid classID",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).send({
+        msg: "couldn't find class",
+        error,
+      });
+    });
+}
+
+export function getSubjectData(req, res) {
+  const { subjectID } = req.params;
+  console.log(req.params);
+
+  subjectModel
+    .findOne({ _id: subjectID })
+    .populate({
+      path: "topics",
+      populate: {
+        path: "lectures",
+      },
+    })
+    .then((sub) => {
+      if (sub) {
+        return res.status(200).send({
+          msg: "Subject retrieved successfully!!",
+          sub,
+        });
+      }
+      return res.status(404).send({
+        msg: "invalid subject ID",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).send({
+        msg: "Error retrieving subject",
+        error,
+      });
+    });
+}
+
+export async function getTopicData(req, res) {
+  const { topicID } = req.params;
+
+  await topicsModel
+    .findOne({ _id: topicID })
+    .then((data) => {
+      if (data) {
+        return res.status(200).send({
+          msg: "Topic data received!!!",
+          data,
+        });
+      }
+      return res.status(404).send({
+        msg: "invalid topic ID",
+      });
+    })
+    .catch((error) => {
+      return res.status(500).send({
+        msg: "Error receiving topic data",
+        error,
+      });
+    });
+}
+
+export async function getLectureData(req, res) {
+  const { lecID } = req.params;
+
+  await lecturesModel
+    .findOne({ _id: lecID })
+    .then((data) => {
+      if (data) {
+        return res.status(200).send({
+          msg: "Lecture data received!!!",
+          lecture,
+        });
+      }
+      return res.status(404).send({
+        msg: "Invalid lecture ID",
+      });
+    })
+    .catch((err) => {
+      return res.status(500).send({
+        msg: "Can't find Lecture data",
+        err,
       });
     });
 }

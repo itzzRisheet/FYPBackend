@@ -9,10 +9,12 @@ const usersSchema = new Schema({
   role: Boolean,
   usersData: {
     type: mongoose.Types.ObjectId,
-    ref: "studentData",
-  } || {
-    type: mongoose.Types.ObjectId,
-    ref: "TeachersData",
+    ref: "userRole",
+  },
+  userRole: {
+    type: String,
+    enum: ["TeachersData", "studentData"],
+    required: true,
   },
 });
 
