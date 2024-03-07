@@ -1,19 +1,26 @@
 import mongoose, { Schema } from "mongoose";
 
 const studentData = mongoose.Schema({
-  enrolls : {
-    clases : [String],
-    assignments : [String]
+  userID: mongoose.Types.ObjectId,
+  enrolls: {
+    classes: [String],
+    assignments: [String],
   },
-  scroes : {
-    assignments : {
-        assignmentID : Number,
-    },
-    quizes : {
-        quizID : Number,    
-    },
-    overallGrade : Number,
-  }
+  scores: {
+    assignments: [
+      {
+        assignmentID: { type: mongoose.Types.ObjectId, ref: "assignments" },
+        assignmentScore: Number,
+      },
+    ],
+    quizes: [
+      {
+        quizID: { type: mongoose.Types.ObjectId, ref: "quizes" },
+        quizScore: Number,
+      },
+    ],
+    overallGrade: Number,
+  },
 });
 
-export default mongoose.model("studentData",studentData);
+export default mongoose.model("studentData", studentData);

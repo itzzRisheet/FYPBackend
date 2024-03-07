@@ -21,7 +21,6 @@ const Classes = Schema({
   peopleType: {
     type: String,
     enum: ["TeachersData", "studentData"],
-    required: true,
   },
 });
 
