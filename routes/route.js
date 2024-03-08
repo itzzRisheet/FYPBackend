@@ -4,39 +4,50 @@ import * as controller from "../controllers/controller.js";
 const router = Router();
 
 //GET requests
+router.route("/login").post(controller.login);
+
+
+router.route("/createuser").post(controller.createUser);
 router.route("/getusers").get(controller.getusers);
 router.route("/getuser/:id/:role").get(controller.getUser);
-router.route("/students/:sid/getclasses").get(controller.getClassNames);
+router
+  .route("/students/:sid/getclassNames")
+  .get(controller.getClassNames_students);
+router.route("/teachers/:tid/getclassNames").get(controller.getClassNames_teachers);
+
 
 router.route("/students/:sid/getVideos/").get(controller.getVideos);
-router.route("/students/:sid/joinclass/").post(controller.joinClass)
+router.route("/students/:sid/joinclass/").post(controller.joinClass);
 router
-  .route("/students/:sid/classes/getclass/:classID")
+  .route("/classes/getclass/:classID")
   .get(controller.getClassData);
 router
-  .route("/students/:sid/classes/getclass/:classID/subjects/:subjectID")
+  .route("/subjects/:subjectID")
   .get(controller.getSubjectData);
 router
   .route(
-    "/students/:sid/classes/getclass/:classID/subjects/:subjectID/topics/:topicID"
+    "/topics/:topicID"
   )
   .get(controller.getTopicData);
 router
   .route(
-    "/students/:sid/classes/getclass/:classID/subjects/:subjectID/topics/:topicID/lectures/:lecID"
+    "/lectures/:lecID"
   )
   .get(controller.getLectureData);
-router
-  .route("/students/:sid/topics/:topicID/quizes/:quizID")
-  .get(controller.getQuizData);
+  router.route("/students/:sid/attemptQuiz").post(controller.attempteQuiz);
+
 
 //temporary routes
-router.route("/createuser").post(controller.createUser);
-router.route("/createclass").post(controller.createClass);
-router.route("/createsubject").post(controller.createSubject);
-router.route("/createtopic").post(controller.createTopic);
-router.route("/createlecture").post(controller.createLecture);
-router.route("/addQuiz").post(controller.addQuiz);
+
+
+
+router.route("/teachers/:tid/createclass").post(controller.createClass);
+
+
+router.route("/teachers/:tid/createsubject").post(controller.createSubject);
+router.route("/teachers/:tid/createtopic").post(controller.createTopic);
+router.route("/teachers/:tid/createlecture").post(controller.createLecture);
+router.route("/teachers/:tid/addQuiz").post(controller.addQuiz);
 router.route("/getQuizData").post(controller.getQuizData);
 
 export default router;

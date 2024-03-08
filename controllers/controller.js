@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as dd from "../helper/dummyData.js";
 import * as helper from "../helper/helper.js";
 import classesModel from "../models/classes.model.js";
@@ -10,6 +11,12 @@ import teachersDataMode from "../models/teachersData.model.js";
 import topicsModel from "../models/topics.model.js";
 import usersModel from "../models/users.model.js";
 import Users from "../models/users.model.js";
+
+export async function login(req,res){
+  return res.status(200).send({
+    role : Math.round(Math.random())
+  })
+}
 
 export async function createUser(req, res) {
   const { fname, lname, email, role } = req.body;
@@ -122,7 +129,6 @@ export async function createTeacher(res, userID) {
 
 export async function getUser(req, res) {
   const { id, role } = req.params;
-  console.log(req.params);
 
   if (parseInt(role)) return getStudent(res, id);
   return getTeacher(res, id);
@@ -146,6 +152,7 @@ async function getStudent(res, id) {
       }
     })
     .catch((error) => {
+      console.log(error);
       return res.status(500).send({
         msg: "User not found",
         error,
@@ -191,24 +198,69 @@ export function getVideos(req, res) {
   }
 }
 
-export async function getClassNames(req, res) {
+export async function getClassNames_students(req, res) {
+  const { sid } = req.params;
 
-  const { sid} = req.params;
+  studentDataModel
+    .find({ _id: sid })
+    .populate({ path: "enrolls", populate: { path: "classes" } })
+    .then((data) => {
+      if (data) {
+        var classnames = [];
+        data.map((d) => {
+          d.enrolls.classes.map((cls) => {
+            classnames.push(cls.title);
+          });
+        });
 
-  studentDataModel.find({ _id :sid}).then((data) => {
-    if(data){
-      const classnames = data.map((d) => {return d.enrolls.classes})
-      return res.status(200).send({
-        msg : "classes retrieved successfully",
-        data : classnames
-      })
-    }
-  }).catch ((error) => {
-    return res.status(500).send({
-      msg : "Error retrieving classes",
-      error
+        // const classnames = data.map((d) => {
+        //   return d.enrolls.classes;
+        // });
+        return res.status(200).send({
+          msg: "classes retrieved successfully",
+          data: classnames,
+        });
+      }
     })
-  })
+    .catch((error) => {
+      return res.status(500).send({
+        msg: "Error retrieving classes",
+        error,
+      });
+    });
+}
+
+export async function getClassNames_teachers(req, res) {
+  const { tid } = req.params;
+  console.log(req.params);
+
+  teachersDataModel
+    .find({ _id: tid })
+    .populate({ path: "classesAssociated" })
+    .then((data) => {
+      if (data) {
+        var classnames = [];
+        data.map((d) => {
+          d.classesAssociated.map((cls) => {
+            classnames.push(cls.title);
+          });
+        });
+
+        return res.status(200).send({
+          msg: "classes retrieved successfully",
+          data: classnames,
+        });
+      }
+      return res.status(404).send({
+        msg: "invalid input data",
+      });
+    })
+    .catch((error) => {
+      return res.status(500).send({
+        msg: "Error retrieving classes",
+        error,
+      });
+    });
 }
 
 export function getClassData(req, res) {
@@ -229,7 +281,7 @@ export function getClassData(req, res) {
       if (data) {
         return res.status(200).send({
           msg: "class retrieved successfully",
-          data: data.Subjects,
+          data: data,
         });
       }
       return res.status(404).send({
@@ -261,7 +313,7 @@ export function getSubjectData(req, res) {
       if (sub) {
         return res.status(200).send({
           msg: "Subject retrieved successfully!!",
-          sub,
+          data: sub,
         });
       }
       return res.status(404).send({
@@ -328,7 +380,9 @@ export async function getLectureData(req, res) {
 
 export async function createClass(req, res) {
   try {
+    const { tid }  = req.params;
     const { title, description, status, classCode } = req.body;
+    console.log(req.params);
     const cls = new classesModel({
       title,
       description,
@@ -337,20 +391,33 @@ export async function createClass(req, res) {
       createdAt: new Date(),
     });
 
-    await cls
-      .save()
-      .then((data) => {
-        return res.status(200).send({
-          msg: "class saved successfully",
-          data,
-        });
-      })
-      .catch((err) => {
-        return res.status(500).send({
-          msg: "error saving class",
-          error: err,
-        });
-      });
+    teachersDataModel.updateOne(
+      { _id: tid },
+      {
+        $push: {
+          classesAssociated : cls._id
+        },
+      }
+    ).then(async (response) => {
+      if(response.modifiedCount > 0){
+        await cls
+          .save()
+          .then((data) => {
+            return res.status(200).send({
+              msg: "class saved successfully",
+              data,
+            });
+          })
+          .catch((err) => {
+            return res.status(500).send({
+              msg: "error saving class",
+              error: err,
+            });
+          });
+      }
+    });
+
+    
   } catch (error) {
     console.log(error);
   }
@@ -524,16 +591,47 @@ export async function getQuizData(req, res) {
 }
 
 export async function attempteQuiz(req, res) {
-  const { quizID, quizScore, studentID } = req.body;
-  studentDataModel.updateOne(
-    { _id: studentID },
-    {
-      $push: {
-        "scores.quizes": { quizID: quizID, quizScore: quizScore },
+  const { quizID, quizScore } = req.body;
+  const { sid } = req.params;
+
+  studentDataModel
+    .updateOne(
+      { _id: sid },
+      {
+        $push: {
+          "scores.quizes": { quizID: quizID, quizScore: quizScore },
+        },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    )
+    .then(async (response) => {
+      const recommendedVideos = await getRecommendedVideos();
+
+      var videoIDs = [];
+
+      recommendedVideos.contents.map((content) => {
+        if (content.type == "video") {
+          videoIDs.push(content.video.videoId);
+        }
+      });
+
+      if (response.modifiedCount > 0) {
+        return res.status(200).send({
+          msg: "data updated!!!",
+          videoIDs,
+        });
+      }
+      return res.status(404).send({
+        msg: "Invalid input data",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).send({
+        msg: "Error updating data!!!",
+        error,
+      });
+    });
 }
 
 export async function joinClass(req, res) {
@@ -550,8 +648,7 @@ export async function joinClass(req, res) {
         },
       }
     )
-    .then((response) => {
-      console.log(response);
+    .then(async (response) => {
       res.status(200).send({
         msg: "user Data updated successfully",
         response,
@@ -630,4 +727,27 @@ export async function getusers(req, res) {
         error,
       });
     });
+}
+
+export async function getRecommendedVideos() {
+  const options = {
+    method: "GET",
+    url: "https://youtube138.p.rapidapi.com/search/",
+    params: {
+      q: "Machine learning",
+      hl: "en",
+      gl: "US",
+    },
+    headers: {
+      "X-RapidAPI-Key": "b79cee61f7msh7d57bdb8220c1b0p1fcb13jsn8b60ff87af10",
+      "X-RapidAPI-Host": "youtube138.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const response = await axios.request(options);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
 }

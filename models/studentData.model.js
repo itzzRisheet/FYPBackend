@@ -3,8 +3,8 @@ import mongoose, { Schema } from "mongoose";
 const studentData = mongoose.Schema({
   userID: mongoose.Types.ObjectId,
   enrolls: {
-    classes: [String],
-    assignments: [String],
+    classes: [{ type: mongoose.Types.ObjectId, ref: "Classes" }],
+    assignments: [{ type: mongoose.Types.ObjectId, ref: "assignments" }],
   },
   scores: {
     assignments: [

@@ -5,8 +5,8 @@ const Topics = Schema({
   description: String,
   createdAt: Date,
   lectureCompleteStatus: {
-    type : Number ,
-    default : 0
+    type: Number,
+    default: 0,
   },
   lectures: [
     {
@@ -16,8 +16,14 @@ const Topics = Schema({
   ],
   quizes: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: "quizes",
+    },
+  ],
+  assignmnets: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "assignments",
     },
   ],
 });
