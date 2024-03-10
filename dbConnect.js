@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import { config } from "dotenv";
+
+config();
 
 export default async function connect() {
   await mongoose
-    .connect(
-      "mongodb+srv://parmarrisheet29:N7FGslS5PIPXvswD@cluster0.ix05l90.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    )
+    .connect(process.env.MONGOURI)
     .then((db) => {
       console.log("database connected...");
       return db;
