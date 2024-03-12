@@ -1,0 +1,559 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FYP backend Risheet",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    },
+    {
+      "url": "localhost://"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "noauthAuth": {
+        "type": "http",
+        "scheme": "noauth"
+      },
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  },
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ],
+  "paths": {
+    "/api/students/43243423423/getVideos/": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "students_homepage",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/teachers/65ea9de8abb7191f4b2119ab/createclass": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "createClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "title": "OOPS with java",
+                  "description": "java by rupam ma'am ",
+                  "status": true,
+                  "classCode": 54333
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/teachers/65ea9de8abb7191f4b2119ab/createsubject": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "createsubject",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "classID": "65e847ccc4e63ab3cd11488e",
+                  "title": "temp subject 2",
+                  "description": "temp subject discription 2"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/teachers/65ea9de8abb7191f4b2119ab/createtopic": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "createtopic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "title": "Temp topic 1",
+                  "description": "Temp topic desc",
+                  "subjectID": "65e84bdaa4c90ce4bb4ce493"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/classes/getclass/65e847ccc4e63ab3cd11488e": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "get class data",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/subjects/65e84bdaa4c90ce4bb4ce493": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "get subject data",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/topics/65e84ea76e02c3cd717ffbf4": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "get topic data",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/lectures/65e852b1f9eeb94f66652a73": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "getLectureData",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/teachers/65ea9de8abb7191f4b2119ab/addQuiz": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "add Quiz",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "topicID": "65e84ea76e02c3cd717ffbf4",
+                  "questions": [
+                    {
+                      "index": 1,
+                      "question": "What is the capital of France?",
+                      "options": {
+                        "a": "Berlin",
+                        "b": "Paris",
+                        "c": "Madrid",
+                        "d": "Rome"
+                      },
+                      "answer": "b"
+                    },
+                    {
+                      "index": 2,
+                      "question": "Which planet is known as the Red Planet?",
+                      "options": {
+                        "a": "Earth",
+                        "b": "Mars",
+                        "c": "Jupiter",
+                        "d": "Venus"
+                      },
+                      "answer": "b"
+                    },
+                    {
+                      "index": 3,
+                      "question": "Who wrote \"Romeo and Juliet\"?",
+                      "options": {
+                        "a": "Charles Dickens",
+                        "b": "William Shakespeare",
+                        "c": "Jane Austen",
+                        "d": "Mark Twain"
+                      },
+                      "answer": "b"
+                    },
+                    {
+                      "index": 4,
+                      "question": "What is the largest mammal in the world?",
+                      "options": {
+                        "a": "Elephant",
+                        "b": "Blue Whale",
+                        "c": "Giraffe",
+                        "d": "Hippopotamus"
+                      },
+                      "answer": "b"
+                    },
+                    {
+                      "index": 5,
+                      "question": "Which programming language is known for its flexibility and readability?",
+                      "options": {
+                        "a": "Java",
+                        "b": "Python",
+                        "c": "C++",
+                        "d": "JavaScript"
+                      },
+                      "answer": "b"
+                    },
+                    {
+                      "index": 6,
+                      "question": "What is the largest ocean on Earth?",
+                      "options": {
+                        "a": "Atlantic Ocean",
+                        "b": "Indian Ocean",
+                        "c": "Southern Ocean",
+                        "d": "Pacific Ocean"
+                      },
+                      "answer": "d"
+                    },
+                    {
+                      "index": 7,
+                      "question": "Who is known as the \"Father of Computer Science\"?",
+                      "options": {
+                        "a": "Alan Turing",
+                        "b": "Bill Gates",
+                        "c": "Steve Jobs",
+                        "d": "Mark Zuckerberg"
+                      },
+                      "answer": "a"
+                    },
+                    {
+                      "index": 8,
+                      "question": "Which famous scientist developed the theory of general relativity?",
+                      "options": {
+                        "a": "Isaac Newton",
+                        "b": "Galileo Galilei",
+                        "c": "Albert Einstein",
+                        "d": "Stephen Hawking"
+                      },
+                      "answer": "c"
+                    },
+                    {
+                      "index": 9,
+                      "question": "What is the chemical symbol for water?",
+                      "options": {
+                        "a": "O2",
+                        "b": "CO2",
+                        "c": "H2O",
+                        "d": "N2"
+                      },
+                      "answer": "c"
+                    },
+                    {
+                      "index": 10,
+                      "question": "In which year did the Titanic sink?",
+                      "options": {
+                        "a": "1905",
+                        "b": "1912",
+                        "c": "1920",
+                        "d": "1931"
+                      },
+                      "answer": "b"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/createuser": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "create User",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "fname": "Aum",
+                  "lname": "Kansara",
+                  "email": "aumkan1111@gmail.com",
+                  "role": 0
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/getusers": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "retrieve all users",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/getQuizData": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "getQuizData and add quiz to student if attempted",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "quizID": "65e986ebcb4591866d2b79fd",
+                  "studentID": "65e986a7cb4591866d2b79f7",
+                  "attempted": false,
+                  "quizScore": 9
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/getuser/65ea9de8abb7191f4b2119ab/0": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "get user",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/students/65e986a7cb4591866d2b79f7/joinclass": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": " join class",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "classID": "65e9984f45bf4b1a034bfba8"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/students/65e986a7cb4591866d2b79f7/getclassNames": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "get Classes Names STUDENTS ( sidebar - just classnames )",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/students/65e986a7cb4591866d2b79f7/attemptQuiz": {
+      "post": {
+        "tags": [
+          "General"
+        ],
+        "summary": "attempt Quiz",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "quizID": "65e986ebcb4591866d2b79fd",
+                  "quizScore": 5
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/080/api/teachers/65ea9de8abb7191f4b2119ab/getclassNames": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "get Classes Names TEACHERS ( sidebar - just classnames )",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

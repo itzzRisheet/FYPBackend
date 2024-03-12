@@ -1,0 +1,633 @@
+{
+	"info": {
+		"_postman_id": "bd5f08b7-63c3-4e53-82f5-96903e8a4be0",
+		"name": "FYP backend Risheet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24035710",
+		"_collection_link": "https://www.postman.com/lively-comet-226967/workspace/adaptivelearnsystem/collection/24035710-bd5f08b7-63c3-4e53-82f5-96903e8a4be0?action=share&source=collection_link&creator=24035710"
+	},
+	"item": [
+		{
+			"name": "students_homepage",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/students/43243423423/getVideos/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"students",
+						"43243423423",
+						"getVideos",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createClass",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\"OOPS with java\",\r\n    \"description\": \"java by rupam ma'am \",\r\n    \"status\" : true,\r\n    \"classCode\" : 54333\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/teachers/65ea9de8abb7191f4b2119ab/createclass",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"teachers",
+						"65ea9de8abb7191f4b2119ab",
+						"createclass"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createsubject",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"classID\" : \"65e847ccc4e63ab3cd11488e\",\r\n    \"title\" : \"temp subject 2\",\r\n    \"description\" : \"temp subject discription 2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/teachers/65ea9de8abb7191f4b2119ab/createsubject",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"teachers",
+						"65ea9de8abb7191f4b2119ab",
+						"createsubject"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createtopic",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\" : \"Temp topic 1\",\r\n    \"description\" : \"Temp topic desc\",\r\n    \"subjectID\" : \"65e84bdaa4c90ce4bb4ce493\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/teachers/65ea9de8abb7191f4b2119ab/createtopic",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"teachers",
+						"65ea9de8abb7191f4b2119ab",
+						"createtopic"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get class data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/classes/getclass/65e847ccc4e63ab3cd11488e",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"classes",
+						"getclass",
+						"65e847ccc4e63ab3cd11488e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get subject data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/subjects/65e84bdaa4c90ce4bb4ce493",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"subjects",
+						"65e84bdaa4c90ce4bb4ce493"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get topic data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/topics/65e84ea76e02c3cd717ffbf4",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"topics",
+						"65e84ea76e02c3cd717ffbf4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getLectureData",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/lectures/65e852b1f9eeb94f66652a73",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"lectures",
+						"65e852b1f9eeb94f66652a73"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add Quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"topicID\": \"65e84ea76e02c3cd717ffbf4\",\r\n    \"questions\": [\r\n        {\r\n            \"index\": 1,\r\n            \"question\": \"What is the capital of France?\",\r\n            \"options\": {\r\n                \"a\": \"Berlin\",\r\n                \"b\": \"Paris\",\r\n                \"c\": \"Madrid\",\r\n                \"d\": \"Rome\"\r\n            },\r\n            \"answer\": \"b\"\r\n        },\r\n        {\r\n            \"index\": 2,\r\n            \"question\": \"Which planet is known as the Red Planet?\",\r\n            \"options\": {\r\n                \"a\": \"Earth\",\r\n                \"b\": \"Mars\",\r\n                \"c\": \"Jupiter\",\r\n                \"d\": \"Venus\"\r\n            },\r\n            \"answer\": \"b\"\r\n        },\r\n        {\r\n            \"index\": 3,\r\n            \"question\": \"Who wrote \\\"Romeo and Juliet\\\"?\",\r\n            \"options\": {\r\n                \"a\": \"Charles Dickens\",\r\n                \"b\": \"William Shakespeare\",\r\n                \"c\": \"Jane Austen\",\r\n                \"d\": \"Mark Twain\"\r\n            },\r\n            \"answer\": \"b\"\r\n        },\r\n        {\r\n            \"index\": 4,\r\n            \"question\": \"What is the largest mammal in the world?\",\r\n            \"options\": {\r\n                \"a\": \"Elephant\",\r\n                \"b\": \"Blue Whale\",\r\n                \"c\": \"Giraffe\",\r\n                \"d\": \"Hippopotamus\"\r\n            },\r\n            \"answer\": \"b\"\r\n        },\r\n        {\r\n            \"index\": 5,\r\n            \"question\": \"Which programming language is known for its flexibility and readability?\",\r\n            \"options\": {\r\n                \"a\": \"Java\",\r\n                \"b\": \"Python\",\r\n                \"c\": \"C++\",\r\n                \"d\": \"JavaScript\"\r\n            },\r\n            \"answer\": \"b\"\r\n        },\r\n        {\r\n            \"index\": 6,\r\n            \"question\": \"What is the largest ocean on Earth?\",\r\n            \"options\": {\r\n                \"a\": \"Atlantic Ocean\",\r\n                \"b\": \"Indian Ocean\",\r\n                \"c\": \"Southern Ocean\",\r\n                \"d\": \"Pacific Ocean\"\r\n            },\r\n            \"answer\": \"d\"\r\n        },\r\n        {\r\n            \"index\": 7,\r\n            \"question\": \"Who is known as the \\\"Father of Computer Science\\\"?\",\r\n            \"options\": {\r\n                \"a\": \"Alan Turing\",\r\n                \"b\": \"Bill Gates\",\r\n                \"c\": \"Steve Jobs\",\r\n                \"d\": \"Mark Zuckerberg\"\r\n            },\r\n            \"answer\": \"a\"\r\n        },\r\n        {\r\n            \"index\": 8,\r\n            \"question\": \"Which famous scientist developed the theory of general relativity?\",\r\n            \"options\": {\r\n                \"a\": \"Isaac Newton\",\r\n                \"b\": \"Galileo Galilei\",\r\n                \"c\": \"Albert Einstein\",\r\n                \"d\": \"Stephen Hawking\"\r\n            },\r\n            \"answer\": \"c\"\r\n        },\r\n        {\r\n            \"index\": 9,\r\n            \"question\": \"What is the chemical symbol for water?\",\r\n            \"options\": {\r\n                \"a\": \"O2\",\r\n                \"b\": \"CO2\",\r\n                \"c\": \"H2O\",\r\n                \"d\": \"N2\"\r\n            },\r\n            \"answer\": \"c\"\r\n        },\r\n        {\r\n            \"index\": 10,\r\n            \"question\": \"In which year did the Titanic sink?\",\r\n            \"options\": {\r\n                \"a\": \"1905\",\r\n                \"b\": \"1912\",\r\n                \"c\": \"1920\",\r\n                \"d\": \"1931\"\r\n            },\r\n            \"answer\": \"b\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/teachers/65ea9de8abb7191f4b2119ab/addQuiz",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"teachers",
+						"65ea9de8abb7191f4b2119ab",
+						"addQuiz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fname\":\"Aum\",\r\n    \"lname\":\"Kansara\",\r\n    \"email\" :\"aumkan1111@gmail.com\",\r\n    \"role\":0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/createuser",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"createuser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "retrieve all users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>ID</th>\r",
+							"        <th>First Name</th>\r",
+							"        <th>Last Name</th>\r",
+							"        <th>Email</th>\r",
+							"        <th>Creation Date</th>\r",
+							"        <th>Role</th>\r",
+							"        <th>User Role</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each response.data}}\r",
+							"        <tr>\r",
+							"            <td>{{_id}}</td>\r",
+							"            <td>{{fname}}</td>\r",
+							"            <td>{{lname}}</td>\r",
+							"            <td>{{email}}</td>\r",
+							"            <td>{{createDate}}</td>\r",
+							"            <td>{{role}}</td>\r",
+							"            <td>{{userRole}}</td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return {response: pm.response.json()}\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/getusers",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"getusers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getQuizData and add quiz to student if attempted",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"quizID\" : \"65e986ebcb4591866d2b79fd\",\r\n    \"studentID\" : \"65e986a7cb4591866d2b79f7\",\r\n    \"attempted\":false,\r\n    \"quizScore\":9\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/getQuizData",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"getQuizData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>User ID</th>\r",
+							"        <th>Enrolled Classes</th>\r",
+							"        <th>Quiz Scores</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each response.data}}\r",
+							"        <tr>\r",
+							"            <td>{{userID}}</td>\r",
+							"            <td>{{enrolls.classes}}</td>\r",
+							"            <td>\r",
+							"                {{#each scores.quizes}}\r",
+							"                    <p>Quiz ID: {{quizID}}, Score: {{quizScore}}</p>\r",
+							"                {{/each}}\r",
+							"            </td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return {response: pm.response.json()}\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/getuser/65ea9de8abb7191f4b2119ab/0",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"getuser",
+						"65ea9de8abb7191f4b2119ab",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": " join class",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"classID\" : \"65e9984f45bf4b1a034bfba8\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/students/65e986a7cb4591866d2b79f7/joinclass",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"students",
+						"65e986a7cb4591866d2b79f7",
+						"joinclass"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Classes Names STUDENTS ( sidebar - just classnames )",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/students/65e986a7cb4591866d2b79f7/getclassNames",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"students",
+						"65e986a7cb4591866d2b79f7",
+						"getclassNames"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "attempt Quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"quizID\":\"65e986ebcb4591866d2b79fd\",\r\n    \"quizScore\" : 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/students/65e986a7cb4591866d2b79f7/attemptQuiz",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"students",
+						"65e986a7cb4591866d2b79f7",
+						"attemptQuiz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Classes Names TEACHERS ( sidebar - just classnames )",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/teachers/65ea9de8abb7191f4b2119ab/getclassNames",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"teachers",
+						"65ea9de8abb7191f4b2119ab",
+						"getclassNames"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "1y12r92c5rp",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "rp7",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

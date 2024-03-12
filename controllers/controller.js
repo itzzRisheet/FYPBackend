@@ -1,6 +1,4 @@
 import axios from "axios";
-import * as dd from "../helper/dummyData.js";
-import * as helper from "../helper/helper.js";
 import classesModel from "../models/classes.model.js";
 import lecturesModel from "../models/lectures.model.js";
 import quizesModel from "../models/quizes.model.js";
