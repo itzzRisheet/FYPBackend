@@ -10,10 +10,38 @@ import topicsModel from "../models/topics.model.js";
 import usersModel from "../models/users.model.js";
 import Users from "../models/users.model.js";
 
-export async function login(req,res){
-  return res.status(200).send({
-    role : Math.round(Math.random())
-  })
+export async function login(req, res) {
+  const cr = {
+    email: "rp@gmail.com",
+    password: "RP@123",
+  };
+
+  const { email, password, role } = req.body;
+  console.log(req.body);
+
+  let isAuthenticated = false;
+  if (cr.email === email) {
+    if (cr.password === password) {
+      isAuthenticated = true;
+    } else {
+      res.status(401).send({
+        msg: "Invalid password",
+      });
+    }
+  }
+
+  // If email is not found in credentials
+  if (!isAuthenticated) {
+    res.status(404).send({
+      msg: "Email not registered!!",
+    });
+    return; // End function execution
+  }
+
+  // If authenticated
+  res.status(200).send({
+    role,
+  });
 }
 
 export async function createUser(req, res) {
@@ -207,7 +235,7 @@ export async function getClassNames_students(req, res) {
         var classnames = [];
         data.map((d) => {
           d.enrolls.classes.map((cls) => {
-            classnames.push(cls.title);
+            classnames.push({ title: cls.title, classID: cls._id });
           });
         });
 
@@ -263,6 +291,7 @@ export async function getClassNames_teachers(req, res) {
 
 export function getClassData(req, res) {
   const { classID } = req.params;
+  console.log(classID);
 
   classesModel
     .findOne({ _id: classID })
@@ -283,7 +312,7 @@ export function getClassData(req, res) {
         });
       }
       return res.status(404).send({
-        msg: "invalid classID",
+        msg: "invalid classID or class doesn't exist",
       });
     })
     .catch((error) => {
@@ -329,6 +358,7 @@ export function getSubjectData(req, res) {
 
 export async function getTopicData(req, res) {
   const { topicID } = req.params;
+  console.log("topicID : ", topicID);
 
   await topicsModel
     .findOne({ _id: topicID })
@@ -378,7 +408,7 @@ export async function getLectureData(req, res) {
 
 export async function createClass(req, res) {
   try {
-    const { tid }  = req.params;
+    const { tid } = req.params;
     const { title, description, status, classCode } = req.body;
     console.log(req.params);
     const cls = new classesModel({
@@ -389,33 +419,33 @@ export async function createClass(req, res) {
       createdAt: new Date(),
     });
 
-    teachersDataModel.updateOne(
-      { _id: tid },
-      {
-        $push: {
-          classesAssociated : cls._id
-        },
-      }
-    ).then(async (response) => {
-      if(response.modifiedCount > 0){
-        await cls
-          .save()
-          .then((data) => {
-            return res.status(200).send({
-              msg: "class saved successfully",
-              data,
+    teachersDataModel
+      .updateOne(
+        { _id: tid },
+        {
+          $push: {
+            classesAssociated: cls._id,
+          },
+        }
+      )
+      .then(async (response) => {
+        if (response.modifiedCount > 0) {
+          await cls
+            .save()
+            .then((data) => {
+              return res.status(200).send({
+                msg: "class saved successfully",
+                data,
+              });
+            })
+            .catch((err) => {
+              return res.status(500).send({
+                msg: "error saving class",
+                error: err,
+              });
             });
-          })
-          .catch((err) => {
-            return res.status(500).send({
-              msg: "error saving class",
-              error: err,
-            });
-          });
-      }
-    });
-
-    
+        }
+      });
   } catch (error) {
     console.log(error);
   }
