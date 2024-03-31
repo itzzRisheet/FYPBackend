@@ -5,9 +5,10 @@ const router = Router();
 
 //GET requests
 router.route("/login").post(controller.login);
+router.route("/signup").post( controller.createUser);
 
 
-router.route("/createuser").post(controller.createUser);
+// router.route("/createuser").post(controller.createUser);
 router.route("/getusers").get(controller.getusers);
 router.route("/getuser/:id/:role").get(controller.getUser);
 router
@@ -45,6 +46,9 @@ router.route("/teachers/:tid/createclass").post(controller.createClass);
 
 
 router.route("/teachers/:tid/createsubject").post(controller.createSubject);
+router.route("/teachers/:tid/createMultipleSubjects").post(controller.createMultipleSubject);
+
+
 router.route("/teachers/:tid/createtopic").post(controller.createTopic);
 router.route("/teachers/:tid/createlecture").post(controller.createLecture);
 router.route("/teachers/:tid/addQuiz").post(controller.addQuiz);

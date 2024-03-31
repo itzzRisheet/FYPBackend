@@ -9,43 +9,66 @@ import teachersDataMode from "../models/teachersData.model.js";
 import topicsModel from "../models/topics.model.js";
 import usersModel from "../models/users.model.js";
 import Users from "../models/users.model.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export async function login(req, res) {
-  const cr = {
-    email: "rp@gmail.com",
-    password: "RP@123",
-  };
+  const { email, password } = req.body;
 
-  const { email, password, role } = req.body;
-  console.log(req.body);
-
-  let isAuthenticated = false;
-  if (cr.email === email) {
-    if (cr.password === password) {
-      isAuthenticated = true;
-    } else {
-      res.status(401).send({
-        msg: "Invalid password",
-      });
-    }
-  }
-
-  // If email is not found in credentials
-  if (!isAuthenticated) {
-    res.status(404).send({
-      msg: "Email not registered!!",
+  if (!email || !password) {
+    return res.status(500).send({
+      msg: "Enter your email and password!!!",
     });
-    return; // End function execution
   }
 
-  // If authenticated
-  res.status(200).send({
-    role,
-  });
+  await usersModel
+    .findOne({ email })
+    .then(async (user) => {
+      await bcrypt
+        .compare(password, user.password)
+        .then((match) => {
+    
+          if (match) {
+            console.log(user);
+            const token = jwt.sign(
+              {
+                userID: user._id,
+                roleID: user.usersData,
+                email: user.email,
+                role: user.role,
+              },
+              process.env.JWTSECRET,
+              { expiresIn: "5h" }
+            );
+
+            return res.status(200).send({
+              msg: "Logged In successfully",
+              token,
+            });
+          } else {
+            return res.status(404).send({
+              msg: "Incorrect password",
+            });
+          }
+        })
+        .catch((err) => {
+          res.status(500).send({
+            msg: "wrong password",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      res.status(404).send({
+        msg: "User not found",
+        error: err.message,
+      });
+    });
 }
 
 export async function createUser(req, res) {
-  const { fname, lname, email, role } = req.body;
+  const { fname, lname, email, role, password } = req.body;
+  console.log(role);
 
   if (role) {
     var usersData = studentDataModel({});
@@ -53,35 +76,77 @@ export async function createUser(req, res) {
     var usersData = teachersDataModel({});
   }
 
-  const user = new usersModel({
-    fname,
-    lname,
-    email,
-    createDate: new Date(),
-    role,
-    userRole: role ? "studentData" : "TeachersData",
-    usersData: usersData._id,
+  const userPromise = new Promise(async (resolve, reject) => {
+    try {
+      const existEmail = await usersModel.findOne({ email });
+
+      if (existEmail) reject("Email already registered!!!");
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
   });
 
-  try {
-    const savedUser = await user.save();
+  userPromise
+    .then(() => {
+      if (!password) {
+        return res.status(500).send({
+          msg: "Didn't get the password",
+        });
+      }
 
-    // Add the userID field to usersData
-    usersData.userID = savedUser._id;
+      bcrypt.hash(password, 12).then(async (hashedpassword) => {
+        const user = new usersModel({
+          fname,
+          lname,
+          email,
+          password: hashedpassword,
+          createDate: new Date(),
+          role,
+          userRole: role ? "studentData" : "TeachersData",
+          usersData: usersData._id,
+        });
+        console.log(user);
 
-    await usersData.save();
+        try {
+          const savedUser = await user.save();
 
-    return res.status(200).send({
-      msg: "User created successfully",
-      data: savedUser,
+          // Add the userID field to usersData
+          usersData.userID = savedUser._id;
+
+          await usersData.save();
+
+          const token = jwt.sign(
+            {
+              userID: savedUser._id,
+              roleID: savedUser.usersData,
+              email: savedUser.email,
+              role: savedUser.role,
+            },
+            process.env.JWTSECRET,
+            { expiresIn: "5h" }
+          );
+
+          return res.status(200).send({
+            msg: "User created successfully",
+            token,
+          });
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send({
+            msg: "Error creating user",
+            error,
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({
+        msg: err,
+        error: err,
+      });
     });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({
-      msg: "Error creating user",
-      error,
-    });
-  }
 }
 
 export async function createStudent(res, userID) {
@@ -258,7 +323,6 @@ export async function getClassNames_students(req, res) {
 
 export async function getClassNames_teachers(req, res) {
   const { tid } = req.params;
-  console.log(req.params);
 
   teachersDataModel
     .find({ _id: tid })
@@ -268,7 +332,7 @@ export async function getClassNames_teachers(req, res) {
         var classnames = [];
         data.map((d) => {
           d.classesAssociated.map((cls) => {
-            classnames.push(cls.title);
+            classnames.push({ title: cls.title, classID: cls._id });
           });
         });
 
@@ -409,13 +473,12 @@ export async function getLectureData(req, res) {
 export async function createClass(req, res) {
   try {
     const { tid } = req.params;
-    const { title, description, status, classCode } = req.body;
-    console.log(req.params);
+    const { title, description, subjects } = req.body;
+
     const cls = new classesModel({
       title,
       description,
-      status,
-      classCode,
+      status: true,
       createdAt: new Date(),
     });
 
@@ -433,10 +496,15 @@ export async function createClass(req, res) {
           await cls
             .save()
             .then((data) => {
-              return res.status(200).send({
-                msg: "class saved successfully",
-                data,
-              });
+              if (subjects && subjects.length > 0) {
+                createMultipleSubject(req, res, subjects, cls._id);
+              } else {
+                res.status(200).send({
+                  msg: "Class added successfully",
+                  data,
+                  classID: cls._id,
+                });
+              }
             })
             .catch((err) => {
               return res.status(500).send({
@@ -445,10 +513,51 @@ export async function createClass(req, res) {
               });
             });
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
   } catch (error) {
-    console.log(error);
+    return res.status(500).send({
+      msg: "error updating class",
+      error: err,
+    });
   }
+}
+
+export async function createMultipleSubject(req, res, subjects, classID) {
+  // const { subjects, classID } = req.body;
+  let subIds = [];
+
+  subjectModel
+    .create(subjects)
+    .then((subs) => {
+      const updatePromises = subs.map((sub) => {
+        return classesModel.updateOne(
+          { _id: classID },
+          { $push: { Subjects: sub._id } }
+        );
+      });
+
+      // Wait for all update operations to complete
+      return Promise.all(updatePromises)
+        .then(() => {
+          return res.status(200).send({
+            msg: "Subjects added to class!!!",
+            data: subs,
+            classID,
+          });
+        })
+        .catch((err) => {
+          throw err;
+        });
+    })
+    .catch((err) => {
+      return res.status(500).send({
+        msg: "Error creating subjects",
+        error: err.message,
+      });
+    });
 }
 
 export async function createSubject(req, res) {
@@ -461,7 +570,7 @@ export async function createSubject(req, res) {
 
     if (!classID) {
       return res.status(500).send({
-        msg: "topicID missing !!!",
+        msg: "ClassID missing !!!",
       });
     }
 
