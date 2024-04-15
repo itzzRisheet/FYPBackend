@@ -11,6 +11,7 @@ import usersModel from "../models/users.model.js";
 import Users from "../models/users.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import requestsModel from "../models/requests.model.js";
 
 export async function login(req, res) {
   const { email, password } = req.body;
@@ -27,9 +28,7 @@ export async function login(req, res) {
       await bcrypt
         .compare(password, user.password)
         .then((match) => {
-    
           if (match) {
-            console.log(user);
             const token = jwt.sign(
               {
                 userID: user._id,
@@ -83,7 +82,7 @@ export async function createUser(req, res) {
       if (existEmail) reject("Email already registered!!!");
       resolve();
     } catch (error) {
-      reject(error);
+      reject(error.message);
     }
   });
 
@@ -106,7 +105,6 @@ export async function createUser(req, res) {
           userRole: role ? "studentData" : "TeachersData",
           usersData: usersData._id,
         });
-        console.log(user);
 
         try {
           const savedUser = await user.save();
@@ -136,7 +134,7 @@ export async function createUser(req, res) {
           return res.status(500).send({
             msg: "Error creating user",
             error,
-          });role wise 
+          });
         }
       });
     })
@@ -230,6 +228,7 @@ async function getStudent(res, id) {
 
   await studentDataModel
     .find({ _id: id })
+    .populate("userID")
     .then((data) => {
       if (data) {
         return res.status(200).send({
@@ -300,7 +299,12 @@ export async function getClassNames_students(req, res) {
         var classnames = [];
         data.map((d) => {
           d.enrolls.classes.map((cls) => {
-            classnames.push({ title: cls.title, classID: cls._id });
+            classnames.push({
+              title: cls.title,
+              classID: cls._id,
+              desc: cls.description,
+              createdAt: cls.createdAt,
+            });
           });
         });
 
@@ -332,7 +336,12 @@ export async function getClassNames_teachers(req, res) {
         var classnames = [];
         data.map((d) => {
           d.classesAssociated.map((cls) => {
-            classnames.push({ title: cls.title, classID: cls._id });
+            classnames.push({
+              title: cls.title,
+              classID: cls._id,
+              desc: cls.description,
+              createdAt: cls.createdAt,
+            });
           });
         });
 
@@ -355,7 +364,6 @@ export async function getClassNames_teachers(req, res) {
 
 export function getClassData(req, res) {
   const { classID } = req.params;
-  console.log(classID);
 
   classesModel
     .findOne({ _id: classID })
@@ -470,6 +478,32 @@ export async function getLectureData(req, res) {
     });
 }
 
+export async function getPeopleData(req, res) {
+  const { classID } = req.params;
+
+  classesModel
+    .findOne({
+      _id: classID,
+    })
+    .populate("Requests")
+    .then((data) => {
+      const { people, Requests } = data;
+
+      return res.status(200).send({
+        msg: "People retrieved successfully!!!",
+        people,
+        requests: Requests,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({
+        msg: "Error retrieving people",
+        error: err.message,
+      });
+    });
+}
+
 export async function createClass(req, res) {
   try {
     const { tid } = req.params;
@@ -496,6 +530,8 @@ export async function createClass(req, res) {
           await cls
             .save()
             .then((data) => {
+              //validation to check if subjects added or not
+
               if (subjects && subjects.length > 0) {
                 createMultipleSubject(req, res, subjects, cls._id);
               } else {
@@ -527,11 +563,12 @@ export async function createClass(req, res) {
 
 export async function createMultipleSubject(req, res, subjects, classID) {
   // const { subjects, classID } = req.body;
-  let subIds = [];
+  // let subIds = [];
 
   subjectModel
     .create(subjects)
     .then((subs) => {
+      /*Try to add all subject ID */
       const updatePromises = subs.map((sub) => {
         return classesModel.updateOne(
           { _id: classID },
@@ -695,7 +732,7 @@ export async function addQuiz(req, res) {
         });
     })
     .catch((error) => {
-      console.log(error);
+      // console.log(error);
       res.status(500).send({
         msg: "error adding quiz to topics",
         error,
@@ -771,32 +808,164 @@ export async function attempteQuiz(req, res) {
     });
 }
 
-export async function joinClass(req, res) {
-  const { classID } = req.body;
-  const { sid } = req.params;
-  console.log(sid, classID);
+export async function addClassCode(req, res) {
+  const { classID } = req.params;
+  const { code } = req.body;
 
-  studentDataModel
+  const classExist = classesModel.findOne({
+    _id: classID,
+  });
+
+  if (!classExist) {
+    return res.status(404).send({
+      msg: "Class not found!!!",
+    });
+  }
+
+  classesModel
     .updateOne(
-      { _id: sid },
       {
-        $addToSet: {
-          "enrolls.classes": classID,
+        _id: classID,
+      },
+      {
+        $set: {
+          classCode: code,
         },
       }
     )
-    .then(async (response) => {
-      res.status(200).send({
-        msg: "user Data updated successfully",
-        response,
+    .then((response) => {
+      console.log(response);
+      if (response.modifiedCount > 0) {
+        return res.status(200).send({
+          msg: "Class code updated successfully!!!",
+          data: response,
+        });
+      }
+      return res.status(500).send({
+        msg: "Failed uploading classCode!!!",
       });
     })
-    .catch((error) => {
-      res.status(500).send({
-        msg: "Error updating class to userdata",
-        error: error.message,
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).send({
+        msg: "Error uploading classCode!!!",
+        error: err.message,
       });
     });
+}
+
+export async function joinClass(req, res) {
+  const { code } = req.body;
+  const { sid } = req.params;
+
+  try {
+    // Find the class using the provided class code
+    let classData;
+    let classExist;
+    await classesModel
+      .findOne({ classCode: code })
+      .then((data) => {
+        classData = data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    if (!classData) {
+      return res.status(404).send({
+        msg: "Classcode not found or expired!!!",
+      });
+    }
+
+    classExist = await studentDataModel.findOne({
+      _id: sid,
+      "enrolls.classes": {
+        $in: [classData._id],
+      },
+    });
+
+    if (classExist) {
+      console.log(classExist);
+      return res.status(500).send({
+        msg: "Class already exists in your enrollments!!!",
+      });
+    }
+
+    const classID = classData._id;
+
+    const requestCheck = await requestsModel.findOne({
+      studentID: sid,
+      classID: classID,
+    });
+
+    if (requestCheck) {
+      return res.status(201).send({
+        msg: "You've already requested to join please wait or ask faculty!!!",
+      });
+    }
+
+    const student = await studentDataModel.findOne({
+      _id: sid,
+    });
+
+    let sname;
+    if (student) {
+      const userInfo = await usersModel.findOne({
+        _id: student.userID,
+      });
+
+      sname = `${userInfo.fname} ${userInfo.lname}`;
+    }
+
+    // Create a new request
+    const request = new requestsModel({
+      classID: classID,
+      studentID: sid,
+      status: true,
+      studentData: {
+        name: sname,
+      },
+    });
+
+    // Save the request
+    const savedRequest = await request.save();
+
+    // check if there's any error saving request
+
+    // Save the request ID to the class document
+    const response = await classesModel.updateOne(
+      { _id: classID },
+      { $push: { Requests: savedRequest._id } }
+    );
+
+    if (response.modifiedCount > 0) {
+      // Update student data
+      const studentDataUpdate = await studentDataModel.updateOne(
+        { _id: sid },
+        { $push: { requests: savedRequest._id } }
+      );
+
+      if (studentDataUpdate.modifiedCount > 0) {
+        return res.status(200).send({
+          msg: "Request to join the class sent successfully!!!",
+          data: studentDataUpdate,
+        });
+      } else {
+        return res.status(500).send({
+          msg: "Error sending request student data not modified!!!",
+        });
+      }
+    } else {
+      return res.status(500).send({
+        msg: "Error saving request to classmodel!!!",
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      msg: "Error sending request!!!",
+      error: err.message,
+    });
+  }
 }
 
 export async function createLecture(req, res) {
@@ -850,18 +1019,26 @@ export async function createLecture(req, res) {
 }
 
 export async function getusers(req, res) {
+  const { ids } = req.body;
+
   usersModel
-    .find({})
+    .find({ _id: { $in: ids } })
     .then((users) => {
-      return res.status(200).send({
-        msg: "Users retrieved",
-        data: users,
-      });
+      if (users.length > 0) {
+        return res.status(200).send({
+          msg: "Users retrieved",
+          data: users,
+        });
+      } else {
+        return res.status(404).send({
+          msg: "No users found with the provided IDs",
+        });
+      }
     })
     .catch((error) => {
       return res.status(500).send({
         msg: "Error retrieving users",
-        error,
+        error: error.message,
       });
     });
 }
@@ -887,4 +1064,134 @@ export async function getRecommendedVideos() {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function acceptRequest(req, res) {
+  const { reqID, classID, studentID } = req.body;
+
+  const studentExistInClass = await classesModel.findOne({
+    _id: classID,
+    people: {
+      $in: [studentID],
+    },
+  });
+
+  if (studentExistInClass) {
+    return res.status(404).send({
+      msg: "You're already in !!!!!",
+    });
+  }
+
+  let classUpdate;
+  await classesModel
+    .updateOne(
+      { _id: classID },
+      {
+        $push: {
+          people: studentID,
+        },
+        $set: {
+          peopleType: "studentData",
+        },
+      }
+    )
+    .then((data) => {
+      classUpdate = data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  let studentUpdate;
+
+  await studentDataModel
+    .updateOne(
+      { _id: studentID },
+      {
+        $push: {
+          "enrolls.classes": classID,
+        },
+      }
+    )
+    .then((data) => {
+      studentUpdate = data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  console.log(studentUpdate, classUpdate);
+
+  if (classUpdate.modifiedCount && studentUpdate.modifiedCount) {
+    deleteRequest(req, res, reqID, classID, studentID).then(() => {
+      return res.status(200).send({
+        msg: "Request accepted successfully",
+      });
+    });
+  } else {
+    return res.status(500).send({
+      msg: "Error updating classID to either student or class model",
+    });
+  }
+}
+
+export async function deleteRequest(
+  req,
+  res,
+  reqID,
+  classID,
+  studentID,
+  reject = false
+) {
+  try {
+    // Delete request from requestsModel
+    const reqDelete = await requestsModel.deleteOne({ _id: reqID });
+
+    if (reqDelete.deletedCount === 0) {
+      return res.status(500).send({
+        msg: "Cannot delete request or request not found",
+      });
+    }
+
+    // Remove request from classModel
+    const classReqDelete = await classesModel.updateOne(
+      { _id: classID },
+      { $pull: { Requests: reqID } }
+    );
+
+    if (classReqDelete.nModified === 0) {
+      return res.status(500).send({
+        msg: "Cannot remove request from classModel or request not found in classModel",
+      });
+    }
+
+    // Remove request from studentDataModel
+    const stdReqDelete = await studentDataModel.updateOne(
+      { _id: studentID },
+      { $pull: { Requests: reqID } }
+    );
+
+    if (stdReqDelete.nModified === 0) {
+      return res.status(500).send({
+        msg: "Cannot remove request from studentDataModel or request not found in studentDataModel",
+      });
+    }
+
+    if (reject) {
+      return res.status(200).send({
+        msg: "Request deleted !!!",
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      msg: "Error deleting request!!!",
+      error: error.message,
+    });
+  }
+}
+
+export async function cancelRequest(req, res) {
+  const { reqID, classID, studentID } = req.body;
+  console.log(req.body);
+  deleteRequest(req, res, reqID, classID, studentID, true);
 }

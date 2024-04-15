@@ -5,7 +5,7 @@ const Classes = Schema({
   description: String,
   status: Boolean,
   createdAt: Date,
-  classCode: Number,
+  classCode: String,
   Subjects: [
     {
       type: mongoose.Types.ObjectId,
@@ -15,13 +15,11 @@ const Classes = Schema({
   people: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "peopleType",
+      ref: "studentData",
     },
   ],
-  peopleType: {
-    type: String,
-    enum: ["TeachersData", "studentData"],
-  },
+  Requests: [{ type: mongoose.Types.ObjectId, ref: "Requests" }],
+
 });
 
 export default mongoose.model("Classes", Classes);

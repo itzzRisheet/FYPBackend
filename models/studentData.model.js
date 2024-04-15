@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const studentData = mongoose.Schema({
-  userID: mongoose.Types.ObjectId,
+  userID: { type: mongoose.Types.ObjectId, ref: "Users" },
   enrolls: {
     classes: [{ type: mongoose.Types.ObjectId, ref: "Classes" }],
     assignments: [{ type: mongoose.Types.ObjectId, ref: "assignments" }],
@@ -21,6 +21,12 @@ const studentData = mongoose.Schema({
     ],
     overallGrade: Number,
   },
+  requests: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Requests",
+    },
+  ],
 });
 
 export default mongoose.model("studentData", studentData);
