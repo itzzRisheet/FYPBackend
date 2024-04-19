@@ -20,6 +20,7 @@ router.route("/lectures/:lecID").get(controller.getLectureData);
 router.route("/getQuizData").post(controller.getQuizData);
 router.route("/cancelRequest").post(controller.cancelRequest);
 router.route("/acceptRequest").post(controller.acceptRequest);
+router.route("/subjects/:subjectID/addTopics").post(controller.addTopics);
 
 /*--------------------Student Routes-------------------------*/
 router

@@ -8,6 +8,7 @@ const Topics = Schema({
     type: Number,
     default: 0,
   },
+  totalLectures: { type: Number, default: 0 },
   lectures: [
     {
       type: mongoose.Schema.Types.ObjectId,

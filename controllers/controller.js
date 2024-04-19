@@ -647,6 +647,39 @@ export async function createSubject(req, res) {
   }
 }
 
+export async function addTopics(req, res) {
+  try {
+    const { topics } = req.body;
+    const { subjectID } = req.params;
+    console.log("topics : ", topics);
+    console.log("subjectID : ", subjectID);
+
+    const createdTopics = await topicsModel.create(topics);
+    const topicIDs = createdTopics.map((topic) => topic._id);
+
+    const updatedSubject = await subjectModel.findOneAndUpdate(
+      { _id: subjectID },
+      { $push: { topics: { $each: topicIDs } } },
+      { new: true } // To return the updated document
+    );
+
+    const subject = await subjectModel
+      .findOne({ _id: subjectID })
+      .populate("topics");
+
+    return res.status(202).send({
+      msg: "Topics added successfully !!!",
+      response: subject,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      msg: "Error updating topics",
+      error: error.message,
+    });
+  }
+}
+
 export async function createTopic(req, res) {
   try {
     const { title, description, subjectID } = req.body;
