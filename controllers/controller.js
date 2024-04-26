@@ -667,7 +667,7 @@ export async function addTopics(req, res) {
       .findOne({ _id: subjectID })
       .populate("topics");
 
-    return res.status(202).send({
+    return res.status(201).send({
       msg: "Topics added successfully !!!",
       response: subject,
     });
@@ -676,6 +676,37 @@ export async function addTopics(req, res) {
     return res.status(500).send({
       msg: "Error updating topics",
       error: error.message,
+    });
+  }
+}
+
+export async function addLectures(req, res) {
+  try {
+    const { topicID } = req.params;
+    const { lectures } = req.body;
+
+    const lecturesdata = lecturesModel.create(lectures);
+    const lectureIDs = lecturesdata.map((lec) => lec._id);
+
+    const UpdatedTopic = topicsModel.findOneAndUpdate(
+      { _id: topicID },
+      {
+        $push: {
+          lectures: {
+            $each: lectureIDs,
+          },
+        },
+      }
+    );
+
+    return res.status(200).send({
+      data: UpdatedTopic,
+      msg: "Updated lectures to topic",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: error,
+      msg: "Error creating lectures",
     });
   }
 }

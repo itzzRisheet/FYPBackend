@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 import mongoose from "mongoose";
-
+ 
 const usersSchema = new Schema({
   fname: String,
   lname: String,

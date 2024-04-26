@@ -27,6 +27,7 @@ const Topics = Schema({
       ref: "assignments",
     },
   ],
+  Resources: [{ type: mongoose.Types.ObjectId, ref: "Resources" }],
 });
 
 export default mongoose.model("Topics", Topics);
