@@ -12,6 +12,7 @@ import Users from "../models/users.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import requestsModel from "../models/requests.model.js";
+import { populate } from "dotenv";
 
 export async function login(req, res) {
   const { email, password } = req.body;
@@ -679,16 +680,35 @@ export async function addTopics(req, res) {
     });
   }
 }
+export async function getlectures(req, res) {
+  const { topicID } = req.params;
+  console.log(topicID);
+
+  try {
+    const lectres = await topicsModel
+      .findOne({ _id: topicID })
+      .populate({ path: "lectures", populate: { path: "Quiz" } });
+    return res.status(200).send({
+      data: lectres,
+      msg: "lectures retrieved successfully!!",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: error,
+      msg: "Error retrieving lectures!!",
+    });
+  }
+}
 
 export async function addLectures(req, res) {
   try {
     const { topicID } = req.params;
     const { lectures } = req.body;
 
-    const lecturesdata = lecturesModel.create(lectures);
+    const lecturesdata = await lecturesModel.create(lectures);
     const lectureIDs = lecturesdata.map((lec) => lec._id);
 
-    const UpdatedTopic = topicsModel.findOneAndUpdate(
+    const UpdatedTopic = await topicsModel.findOneAndUpdate(
       { _id: topicID },
       {
         $push: {
@@ -696,7 +716,8 @@ export async function addLectures(req, res) {
             $each: lectureIDs,
           },
         },
-      }
+      },
+      { new: true } // Option to return the updated document
     );
 
     return res.status(200).send({
@@ -704,11 +725,21 @@ export async function addLectures(req, res) {
       msg: "Updated lectures to topic",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       error: error,
       msg: "Error creating lectures",
     });
   }
+}
+
+export async function addResources(req,res) {
+
+  const { lectureID} = req.params;
+  const { files } = req.body;
+
+
+
 }
 
 export async function createTopic(req, res) {
@@ -764,18 +795,30 @@ export async function createTopic(req, res) {
 }
 
 export async function addQuiz(req, res) {
-  const { questions, topicID } = req.body;
+  const { questions, forced } = req.body;
+  const { lectureID } = req.params;
+  console.log("called");
+  console.log(forced);
+
+  if (!forced) {
+    const lecture = await lecturesModel.findOne({ _id: lectureID });
+    if (lecture && lecture.Quiz) {
+      return res.status(404).send({
+        msg: "There's already a quiz",
+      });
+    }
+  }
 
   const quiz = quizesModel({
     questions,
   });
 
-  await topicsModel
+  await lecturesModel
     .updateOne(
-      { _id: topicID },
+      { _id: lectureID },
       {
         $push: {
-          quizes: quiz._id,
+          Quiz: quiz._id,
         },
       }
     )

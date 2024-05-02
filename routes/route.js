@@ -22,6 +22,9 @@ router.route("/cancelRequest").post(controller.cancelRequest);
 router.route("/acceptRequest").post(controller.acceptRequest);
 router.route("/subjects/:subjectID/addTopics").post(controller.addTopics);
 router.route("/topics/:topicID/addlectures").post(controller.addLectures);
+router.route("/topics/:topicID/getlectures").get(controller.getlectures);
+router.route("/lectures/:lectureID/addQuiz").post(controller.addQuiz);
+router.route("/lectures/:lectureID/addResources").post(controller.addResources);
 
 /*--------------------Student Routes-------------------------*/
 router
@@ -45,7 +48,6 @@ router
 
 router.route("/teachers/:tid/createtopic").post(controller.createTopic);
 router.route("/teachers/:tid/createlecture").post(controller.createLecture);
-router.route("/teachers/:tid/addQuiz").post(controller.addQuiz);
 router.route("/classes/:classID/addCode").post(controller.addClassCode);
 
 export default router;
