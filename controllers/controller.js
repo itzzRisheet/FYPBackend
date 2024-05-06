@@ -685,11 +685,12 @@ export async function getlectures(req, res) {
   console.log(topicID);
 
   try {
-    const lectres = await topicsModel
+    const lectures = await topicsModel
       .findOne({ _id: topicID })
-      .populate({ path: "lectures", populate: { path: "Quiz" } });
+      .populate({ path: "lectures" })
+      .populate({ path: "Quiz" });
     return res.status(200).send({
-      data: lectres,
+      data: lectures,
       msg: "lectures retrieved successfully!!",
     });
   } catch (error) {
@@ -733,13 +734,9 @@ export async function addLectures(req, res) {
   }
 }
 
-export async function addResources(req,res) {
-
-  const { lectureID} = req.params;
+export async function addResources(req, res) {
+  const { lectureID } = req.params;
   const { files } = req.body;
-
-
-
 }
 
 export async function createTopic(req, res) {
@@ -796,26 +793,36 @@ export async function createTopic(req, res) {
 
 export async function addQuiz(req, res) {
   const { questions, forced } = req.body;
-  const { lectureID } = req.params;
-  console.log("called");
-  console.log(forced);
+  const { topicID } = req.params;
+
+  const topic = await topicsModel.findOne({ _id: topicID });
 
   if (!forced) {
-    const lecture = await lecturesModel.findOne({ _id: lectureID });
-    if (lecture && lecture.Quiz) {
+    if (topic && topic.Quiz) {
       return res.status(404).send({
         msg: "There's already a quiz",
       });
     }
   }
 
+  if (topic && topic.Quiz.length > 0) {
+    await topicsModel
+      .updateOne({ _id: topicID }, { $set: { Quiz: [] } })
+      .then((data) => {
+        console.log("quiz is empty now ", data);
+      })
+      .catch((err) => {
+        console.log("Error : ", err);
+      });
+  }
+
   const quiz = quizesModel({
     questions,
   });
 
-  await lecturesModel
+  await topicsModel
     .updateOne(
-      { _id: lectureID },
+      { _id: topicID },
       {
         $push: {
           Quiz: quiz._id,

@@ -23,7 +23,7 @@ router.route("/acceptRequest").post(controller.acceptRequest);
 router.route("/subjects/:subjectID/addTopics").post(controller.addTopics);
 router.route("/topics/:topicID/addlectures").post(controller.addLectures);
 router.route("/topics/:topicID/getlectures").get(controller.getlectures);
-router.route("/lectures/:lectureID/addQuiz").post(controller.addQuiz);
+router.route("/topics/:topicID/addQuiz").post(controller.addQuiz);
 router.route("/lectures/:lectureID/addResources").post(controller.addResources);
 
 /*--------------------Student Routes-------------------------*/

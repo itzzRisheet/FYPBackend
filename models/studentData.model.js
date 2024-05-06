@@ -27,6 +27,12 @@ const studentData = mongoose.Schema({
       ref: "Requests",
     },
   ],
+  surveyGiven: { type: Boolean, default: false },
+  interests: {
+    professionalRoles: [{ type: String }],
+    coreSubjects: [{ type: String }],
+    specializationSubjects: [{ type: String }],
+  },
 });
 
 export default mongoose.model("studentData", studentData);
