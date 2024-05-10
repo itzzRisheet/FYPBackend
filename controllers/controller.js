@@ -487,13 +487,28 @@ export async function getPeopleData(req, res) {
       _id: classID,
     })
     .populate("Requests")
+    .populate({
+      path: "people",
+      populate: {
+        path: "userID",
+      },
+    })
     .then((data) => {
       const { people, Requests } = data;
+      const names = [];
+
+      data.people.map((people) => {
+        let fullname = people.userID.fname + " " + people.userID.lname;
+        names.push({ id: people._id, fullname });
+      });
+
+      console.log(names);
 
       return res.status(200).send({
         msg: "People retrieved successfully!!!",
         people,
         requests: Requests,
+        names,
       });
     })
     .catch((err) => {
@@ -882,44 +897,64 @@ export async function attempteQuiz(req, res) {
   const { quizID, quizScore } = req.body;
   const { sid } = req.params;
 
-  studentDataModel
-    .updateOne(
-      { _id: sid },
-      {
-        $push: {
-          "scores.quizes": { quizID: quizID, quizScore: quizScore },
-        },
-      },
-      { new: true }
-    )
-    .then(async (response) => {
-      const recommendedVideos = await getRecommendedVideos();
+  const student = await studentDataModel.findOne({ _id: sid });
+  let attempts;
+  const quizes = student.scores['quizes']
+  quizes.map((quiz) => {
+    console.log(quiz);
+    if (quiz.quizID === quizID) {
+      attempts = quiz.attempts;
+    }
+  });
 
-      var videoIDs = [];
+  // if (!student) {
+  //   return res.status(404).send({
+  //     msg: "Student not found invalid StudentID",
+  //   });
+  // }
 
-      recommendedVideos.contents.map((content) => {
-        if (content.type == "video") {
-          videoIDs.push(content.video.videoId);
-        }
-      });
+  // studentDataModel
+  //   .updateOne(
+  //     { _id: sid },
+  //     {
+  //       $push: {
+  //         "scores.quizes": {
+  //           quizID: quizID,
+  //           quizScore: quizScore,
+  //           attempts: attempts + 1,
+  //         },
+  //       },
+  //     },
+  //     { new: true }
+  //   )
+  //   .then(async (response) => {
+  //     const recommendedVideos = await getRecommendedVideos();
 
-      if (response.modifiedCount > 0) {
-        return res.status(200).send({
-          msg: "data updated!!!",
-          videoIDs,
-        });
-      }
-      return res.status(404).send({
-        msg: "Invalid input data",
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-      return res.status(500).send({
-        msg: "Error updating data!!!",
-        error,
-      });
-    });
+  //     var videoIDs = [];
+
+  //     recommendedVideos.contents.map((content) => {
+  //       if (content.type == "video") {
+  //         videoIDs.push(content.video.videoId);
+  //       }
+  //     });
+
+  //     if (response.modifiedCount > 0) {
+  //       return res.status(200).send({
+  //         msg: "data updated!!!",
+  //         videoIDs,
+  //       });
+  //     }
+  //     return res.status(404).send({
+  //       msg: "Invalid input data",
+  //     });
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //     return res.status(500).send({
+  //       msg: "Error updating data!!!",
+  //       error,
+  //     });
+  //   });
 }
 
 export async function addClassCode(req, res) {

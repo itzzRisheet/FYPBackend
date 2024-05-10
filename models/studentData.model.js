@@ -17,6 +17,7 @@ const studentData = mongoose.Schema({
       {
         quizID: { type: mongoose.Types.ObjectId, ref: "quizes" },
         quizScore: Number,
+        attempts: { type: Number, default: 0 },
       },
     ],
     overallGrade: Number,
