@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 import mongoose from "mongoose";
- 
+
 const usersSchema = new Schema({
   fname: String,
   lname: String,
@@ -8,14 +8,16 @@ const usersSchema = new Schema({
   password: String,
   createDate: Date,
   role: Boolean,
-  usersData: {
-    type: mongoose.Types.ObjectId,
-    ref: "userRole",
-  },
+  age: Number , 
+  gender : String , 
   userRole: {
     type: String,
     enum: ["TeachersData", "studentData"],
     required: true,
+  },
+  usersData: {
+    type: mongoose.Types.ObjectId,
+    ref: "userRole",
   },
 });
 

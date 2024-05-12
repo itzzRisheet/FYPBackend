@@ -33,6 +33,7 @@ router
 router.route("/students/:sid/getVideos/").get(controller.getVideos);
 router.route("/students/:sid/attemptQuiz").post(controller.attempteQuiz);
 router.route("/students/:sid/joinClass/").post(controller.joinClass);
+router.route("/students/:sid/submitSurvey").post(controller.submitSurvey)
 
 /*--------------------Teacher Routes-------------------------*/
 

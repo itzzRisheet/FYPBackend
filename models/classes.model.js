@@ -19,7 +19,6 @@ const Classes = Schema({
     },
   ],
   Requests: [{ type: mongoose.Types.ObjectId, ref: "Requests" }],
-
 });
 
 export default mongoose.model("Classes", Classes);

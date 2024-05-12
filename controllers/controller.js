@@ -22,13 +22,19 @@ export async function login(req, res) {
       msg: "Enter your email and password!!!",
     });
   }
-
+  let surveyGiven;
   await usersModel
     .findOne({ email })
     .then(async (user) => {
+      if (user) {
+        const sid = user.usersData;
+        const student = await studentDataModel.findOne({ _id: sid });
+        surveyGiven = student.surveyGiven;
+      }
       await bcrypt
         .compare(password, user.password)
         .then((match) => {
+          console.log(match);
           if (match) {
             const token = jwt.sign(
               {
@@ -36,6 +42,9 @@ export async function login(req, res) {
                 roleID: user.usersData,
                 email: user.email,
                 role: user.role,
+                age: user.age,
+                gender: user.gender,
+                surveyGiven,
               },
               process.env.JWTSECRET,
               { expiresIn: "5h" }
@@ -52,6 +61,7 @@ export async function login(req, res) {
           }
         })
         .catch((err) => {
+          console.log(err);
           res.status(500).send({
             msg: "wrong password",
             error: err,
@@ -59,16 +69,31 @@ export async function login(req, res) {
         });
     })
     .catch((err) => {
+      console.log(err);
       res.status(404).send({
         msg: "User not found",
         error: err.message,
       });
     });
 }
+export async function submitSurvey(req, res) {
+  const { sid } = req.params;
+
+  const updateStatus = studentDataModel.findOneAndUpdate(
+    { _id: sid },
+    {
+      $set: {
+        surveyGiven: true,
+      },
+    }
+  );
+
+  console.log(updateStatus);
+}
 
 export async function createUser(req, res) {
-  const { fname, lname, email, role, password } = req.body;
-  console.log(role);
+  const { fname, lname, email, role, password, age, gender } = req.body;
+  console.log(req.body);
 
   if (role) {
     var usersData = studentDataModel({});
@@ -105,6 +130,8 @@ export async function createUser(req, res) {
           role,
           userRole: role ? "studentData" : "TeachersData",
           usersData: usersData._id,
+          age,
+          gender,
         });
 
         try {
@@ -121,6 +148,9 @@ export async function createUser(req, res) {
               roleID: savedUser.usersData,
               email: savedUser.email,
               role: savedUser.role,
+              surveyGiven: false,
+              age: savedUser.age,
+              gender: savedUser.gender,
             },
             process.env.JWTSECRET,
             { expiresIn: "5h" }
@@ -899,7 +929,7 @@ export async function attempteQuiz(req, res) {
 
   const student = await studentDataModel.findOne({ _id: sid });
   let attempts;
-  const quizes = student.scores['quizes']
+  const quizes = student.scores["quizes"];
   quizes.map((quiz) => {
     console.log(quiz);
     if (quiz.quizID === quizID) {
