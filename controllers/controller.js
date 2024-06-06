@@ -15,6 +15,7 @@ import requestsModel from "../models/requests.model.js";
 import { populate } from "dotenv";
 
 export async function login(req, res) {
+  // console.log(req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -22,14 +23,14 @@ export async function login(req, res) {
       msg: "Enter your email and password!!!",
     });
   }
-  let surveyGiven;
+  // let surveyGiven;
   await usersModel
     .findOne({ email })
     .then(async (user) => {
       if (user) {
         const sid = user.usersData;
         const student = await studentDataModel.findOne({ _id: sid });
-        surveyGiven = student.surveyGiven;
+        // surveyGiven = student.surveyGiven;
       }
       await bcrypt
         .compare(password, user.password)
@@ -44,7 +45,7 @@ export async function login(req, res) {
                 role: user.role,
                 age: user.age,
                 gender: user.gender,
-                surveyGiven,
+                // surveyGiven,
               },
               process.env.JWTSECRET,
               { expiresIn: "5h" }
