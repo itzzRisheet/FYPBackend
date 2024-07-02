@@ -33,7 +33,7 @@ router
 router.route("/students/:sid/getVideos/").get(controller.getVideos);
 router.route("/students/:sid/attemptQuiz").post(controller.attempteQuiz);
 router.route("/students/:sid/joinClass/").post(controller.joinClass);
-router.route("/students/:sid/submitSurvey").post(controller.submitSurvey)
+router.route("/students/:sid/submitSurvey").post(controller.submitSurvey);
 
 /*--------------------Teacher Routes-------------------------*/
 
@@ -41,7 +41,7 @@ router
   .route("/teachers/:tid/getclassNames")
   .get(controller.getClassNames_teachers);
 router.route("/teachers/:tid/createclass").post(controller.createClass);
-
+router.route("/teachers/:id/subjects/deleteSubjects");
 router.route("/teachers/:tid/createsubject").post(controller.createSubject);
 router
   .route("/teachers/:tid/createMultipleSubjects")

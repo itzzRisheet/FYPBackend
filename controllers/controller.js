@@ -12,7 +12,6 @@ import Users from "../models/users.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import requestsModel from "../models/requests.model.js";
-import { populate } from "dotenv";
 
 export async function login(req, res) {
   const { email, password } = req.body;
@@ -26,10 +25,11 @@ export async function login(req, res) {
   await usersModel
     .findOne({ email })
     .then(async (user) => {
+      console.log(user);
       if (user) {
         const sid = user.usersData;
         const student = await studentDataModel.findOne({ _id: sid });
-        surveyGiven = student.surveyGiven;
+        // surveyGiven = student.surveyGiven;
       }
       await bcrypt
         .compare(password, user.password)
@@ -44,7 +44,7 @@ export async function login(req, res) {
                 role: user.role,
                 age: user.age,
                 gender: user.gender,
-                surveyGiven,
+                // surveyGiven,
               },
               process.env.JWTSECRET,
               { expiresIn: "5h" }
@@ -576,12 +576,10 @@ export async function createClass(req, res) {
           await cls
             .save()
             .then((data) => {
-              //validation to check if subjects added or not
-
               if (subjects && subjects.length > 0) {
                 createMultipleSubject(req, res, subjects, cls._id);
               } else {
-                res.status(200).send({
+                return res.status(200).send({
                   msg: "Class added successfully",
                   data,
                   classID: cls._id,
@@ -598,6 +596,10 @@ export async function createClass(req, res) {
       })
       .catch((err) => {
         console.log(err);
+        return res.status(500).send({
+          msg: err.message,
+          error: err,
+        });
       });
   } catch (error) {
     return res.status(500).send({
@@ -614,7 +616,6 @@ export async function createMultipleSubject(req, res, subjects, classID) {
   subjectModel
     .create(subjects)
     .then((subs) => {
-      /*Try to add all subject ID */
       const updatePromises = subs.map((sub) => {
         return classesModel.updateOne(
           { _id: classID },
@@ -622,9 +623,9 @@ export async function createMultipleSubject(req, res, subjects, classID) {
         );
       });
 
-      // Wait for all update operations to complete
       return Promise.all(updatePromises)
         .then(() => {
+          console.log("class created!!!");
           return res.status(200).send({
             msg: "Subjects added to class!!!",
             data: subs,
@@ -632,7 +633,10 @@ export async function createMultipleSubject(req, res, subjects, classID) {
           });
         })
         .catch((err) => {
-          throw err;
+          return res.status(500).send({
+            msg: err.message,
+            error: err,
+          });
         });
     })
     .catch((err) => {
