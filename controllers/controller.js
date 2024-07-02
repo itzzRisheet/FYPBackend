@@ -14,6 +14,7 @@ import jwt from "jsonwebtoken";
 import requestsModel from "../models/requests.model.js";
 
 export async function login(req, res) {
+  // console.log(req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -21,7 +22,7 @@ export async function login(req, res) {
       msg: "Enter your email and password!!!",
     });
   }
-  let surveyGiven;
+  // let surveyGiven;
   await usersModel
     .findOne({ email })
     .then(async (user) => {
